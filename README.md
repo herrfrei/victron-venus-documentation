@@ -60,5 +60,6 @@ supervise may exit immediately after startup if it cannot find the files it need
 # Links
 
 - https://github.com/victronenergy/venus/wiki/commandline---development
+- https://github.com/victronenergy/venus/wiki/commandline---operational
 - https://cr.yp.to/daemontools/svc.html
-- 
+
