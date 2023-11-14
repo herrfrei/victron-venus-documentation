@@ -57,9 +57,98 @@ supervise maintains status information in a binary format inside the directory s
 
 supervise may exit immediately after startup if it cannot find the files it needs in s or if another copy of supervise is already running in s. Once supervise is successfully running, it will not exit unless it is killed or specifically asked to exit. You can use svok to check whether supervise is successfully running. You can use svscan to reliably start a collection of supervise processes.
 
+# ConnMan
+
+ConnMan is a command-line network manager designed for use with embedded devices and fast resolve times. It is modular through a plugin architecture, but has native DHCP and NTP support.[1]
+
+## Enabling and disabling WiFi
+
+To check if WiFi is enabled you can run `connmanctl technologies` and check for the line that says `Powered: True/False`. To power the WiFi on you can run `connmanctl enable wifi` or if you need to disable it you can run `connmanctl disable wifi`. Other ways to enable WiFi could include using the `Fn` keys on the laptop to turn it on or running `ip link set _interface_ up`.
+
+## Connecting to an open access point
+
+To scan the network `connmanctl` accepts simple names called _technologies_. To scan for nearby Wi-Fi networks:
+
+```
+$ connmanctl scan wifi
+
+```
+
+To list the available networks found after a scan run (example output):
+
+```
+$ connmanctl services
+```
+
+```
+*AO MyNetwork               wifi_dc85de828967_68756773616d_managed_psk
+    OtherNET                wifi_dc85de828967_38303944616e69656c73_managed_psk 
+    AnotherOne              wifi_dc85de828967_3257495245363836_managed_wep
+    FourthNetwork           wifi_dc85de828967_4d7572706879_managed_wep
+    AnOpenNetwork           wifi_dc85de828967_4d6568657272696e_managed_none
+
+```
+
+To connect to an open network, use the second field beginning with `wifi_`:
+
+```
+$ connmanctl connect wifi_dc85de828967_4d6568657272696e_managed_none
+
+```
+
+## Technologies
+
+Various hardware interfaces are referred to as _Technologies_ by ConnMan.
+
+To list available _technologies_ run:
+
+```
+$ connmanctl technologies
+
+```
+
+To get just the types by their name one can use this one liner:
+
+```
+$ connmanctl technologies | awk '/Type/ { print $NF }'
+
+```
+
+**Note:** The field `Type = tech_name` provides the technology type used with `connmanctl` commands
+
+To interact with them one must refer to the technology by type. _Technologies_ can be toggled on/off with:
+
+```
+$ connmanctl enable technology_type
+
+```
+
+and:
+
+```
+$ connmanctl disable technology_type
+
+```
+
+For example to toggle off wifi:
+
+```
+$ connmanctl disable wifi
+
+```
+
+**Warning:** connman grabs rfkill events. It is most likely impossible to use `rfkill` or `bluetoothctl` to (un)block devices, yet hardware keys may still work.[\[2\]](https://git.kernel.org/cgit/network/connman/connman.git/tree/doc/overview-api.txt#n406) Always use `connmanctl enable|disable`
+
+### Tips and tricks
+
+**Tip:** Network names can be tab-completed.
+
+You should now be connected to the network. Check using `connmanctl state` or `ip addr`.
+
 # Links
 
 - https://github.com/victronenergy/venus/wiki/commandline---development
 - https://github.com/victronenergy/venus/wiki/commandline---operational
 - https://cr.yp.to/daemontools/svc.html
+- https://wiki.archlinux.org/title/ConnMan
 
